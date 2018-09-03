@@ -4,21 +4,18 @@
 #include "screen_buffer.h"
 #include "I_keyboard_buffer.h"
 
-cl_game::cl_game(I_KeyboardBuffer& kb_buffer, const T_player_settings& player_settings, const cl_matchpile::MatchPileSettings& pile_settings) :
+cl_game::cl_game(I_KeyboardBuffer& kb_buffer, cl_matchpile* p_match_pile, std::vector<cl_player*> p_players) :
 kb_buffer_(kb_buffer),
-m_turn(0),
-m_pile(pile_settings)
+turn_(0),
+p_match_pile_(p_match_pile),
+p_players_(p_players),
+p_active_player_(&p_players_, &p_players_[0])
 {
-    for (int i = 0; i < player_settings.number_of_players; ++i)
-    {
-        m_p_players.push_back(cl_player::create(kb_buffer, player_settings.player_config[i]));
-    }
-    p_active_player_ = Selector<cl_player*>(&m_p_players, &m_p_players[0]);
 }
 
 cl_game::~cl_game()
 {
-    for (cl_player* p_player : m_p_players)
+    for (cl_player* p_player : p_players_)
     {
         delete p_player;
     }
@@ -26,7 +23,7 @@ cl_game::~cl_game()
 
 void cl_game::choose_player(void)
 {
-	if (1 < m_turn)
+	if (1 < turn_)
 	{
         ++p_active_player_;
 	}
@@ -41,10 +38,9 @@ void cl_game::show_game_over_message(void)
 
 void cl_game::play_game(void)
 {
-    screenbuffer::ClearScreen();
-    while(m_pile.get_remaining_matches())
+    while(p_match_pile_->get_remaining_matches())
     {
-		++m_turn;
+		++turn_;
 		choose_player();
         play_round();
     }
@@ -60,17 +56,17 @@ void cl_game::play_round(void)
 
     int last_row = screenbuffer::GetCursorRow(); 
 
-    std::cout << m_pile.print_matches();
+    std::cout << p_match_pile_->print_matches();
     
-    int matches_to_remove = p_active_player_->play_turn(m_pile.get_remaining_matches());
-    m_pile.remove_matches(matches_to_remove);
+    int matches_to_remove = p_active_player_->play_turn(p_match_pile_->get_remaining_matches());
+    p_match_pile_->remove_matches(matches_to_remove);
 
     screenbuffer::SetCursorPosition(0, last_row);
-    std::cout << m_pile.print_matches();
+    std::cout << p_match_pile_->print_matches();
 
     screenbuffer::ClearRow();
 
-    if (!m_pile.get_remaining_matches())
+    if (!p_match_pile_->get_remaining_matches())
     {
         return;
     }
@@ -86,7 +82,7 @@ cl_player* cl_game::p_get_active_player()
 
 int cl_game::get_turn()
 {
-	return m_turn;
+	return turn_;
 }
 
 void cl_game::prompt_for_enter()

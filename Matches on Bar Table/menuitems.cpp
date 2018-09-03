@@ -163,11 +163,23 @@ cl_menuitem_start_game::cl_menuitem_start_game(std::string display_text, const c
 
 bool cl_menuitem_start_game::enter_pressed()
 {
-	cl_game game(KeyboardBuffer::GetInstance(), m_player_settings, pile_settings_);
+    cl_matchpile match_pile = cl_matchpile(pile_settings_);
 
-    screenbuffer::ClearScreen();
+    std::vector<cl_player*> p_players(m_player_settings.number_of_players);
+    for (int i = 0; i < m_player_settings.number_of_players; ++i)
+    {
+        p_players[i] = cl_player::create(KeyboardBuffer::GetInstance(), m_player_settings.player_config[i]);
+    }
+    
+    cl_game game(KeyboardBuffer::GetInstance(), &match_pile, p_players);
 	game.play_game();
-	return false;
+	
+    for (cl_player* player : p_players)
+    {
+        delete player;
+    }
+    
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------
