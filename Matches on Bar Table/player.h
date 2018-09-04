@@ -9,7 +9,7 @@
 class cl_player
 {
 public:
-    virtual int play_turn(int remaining_matches) = 0;
+    virtual void play_turn() = 0;
     virtual ~cl_player();
     std::string get_player_type();
     std::string get_player_name();
@@ -34,7 +34,7 @@ public:
     static cl_player* create(I_KeyboardBuffer& kb_buffer, const T_config& player_config, I_MatchPile* p_match_pile);
 
 protected:
-    I_MatchPile * p_match_pile_;
+    I_MatchPile* p_match_pile_;
     int m_matches_removed;
     const std::string m_player_type;
     const std::string m_player_name;
@@ -45,7 +45,7 @@ class cl_player_computer : public cl_player
 {
 public:
     cl_player_computer(std::string player_name, E_difficulty difficulty, I_MatchPile* p_match_pile);
-    int play_turn(int remaining_matches);
+    void play_turn();
     bool determine_randomness(E_difficulty difficulty);
     int choose_matches(int matches_left, bool choose_randomly);
     int choose_matches_randomly(int matches_left);
@@ -60,7 +60,7 @@ class cl_player_human : public cl_player
 public:
     cl_player_human(I_KeyboardBuffer& kb_buffer, std::string player_name, I_MatchPile* p_matchpile);
     int pick_matches();
-    int play_turn(int remaining_matches);
+    void play_turn();
 private:
     I_KeyboardBuffer& kb_buffer_;
 };

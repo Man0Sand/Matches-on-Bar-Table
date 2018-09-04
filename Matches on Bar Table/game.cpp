@@ -57,8 +57,7 @@ void cl_game::play_round(void)
 
     std::cout << p_match_pile_->print_matches();
     
-    int matches_to_remove = p_active_player_->play_turn(p_match_pile_->get_remaining_matches());
-    p_match_pile_->remove_matches(matches_to_remove);
+    p_active_player_->play_turn();
 
     screenbuffer::SetCursorPosition(0, last_row);
     std::cout << p_match_pile_->print_matches();

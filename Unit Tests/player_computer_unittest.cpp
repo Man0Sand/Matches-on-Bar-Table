@@ -122,7 +122,8 @@ namespace
 
 	TEST_F(ComputerPlayer_Test, PlayTurn)
 	{
-		ASSERT_EQ(3, p_Computer->play_turn(4));
+		p_Computer->play_turn();
+        ASSERT_EQ(8, p_match_pile->get_remaining_matches());
 	}
 
 }	//namespace

@@ -172,33 +172,31 @@ namespace
 
         cl_player* p_active_player = players[0];
         
-        int matches_left = 10;
-        
         // Human's turn
-        matches_left -= p_active_player->play_turn(matches_left);
-        ASSERT_EQ(7, matches_left);
+        p_active_player->play_turn();
+        ASSERT_EQ(6, match_pile.get_remaining_matches());
         ASSERT_EQ(3, players[0]->get_matches_removed());
         ASSERT_EQ(0, players[1]->get_matches_removed());
 
         // Computer's turn
         p_active_player = *player_selector.next();
-        matches_left -= p_active_player->play_turn(matches_left);
-        ASSERT_EQ(5, matches_left);
+        p_active_player->play_turn();
+        ASSERT_EQ(5, match_pile.get_remaining_matches());
         ASSERT_EQ(3, players[0]->get_matches_removed());
-        ASSERT_EQ(2, players[1]->get_matches_removed());
+        ASSERT_EQ(1, players[1]->get_matches_removed());
 
         // Human's turn
         p_active_player = *player_selector.next();
-        matches_left -= p_active_player->play_turn(matches_left);
-        ASSERT_EQ(4, matches_left);
+        p_active_player->play_turn();
+        ASSERT_EQ(4, match_pile.get_remaining_matches());
         ASSERT_EQ(4, players[0]->get_matches_removed());
-        ASSERT_EQ(2, players[1]->get_matches_removed());
+        ASSERT_EQ(1, players[1]->get_matches_removed());
 
         // Computer's turn
         p_active_player = *player_selector.next();
-        matches_left -= p_active_player->play_turn(matches_left);
-        ASSERT_EQ(1, matches_left);
+        p_active_player->play_turn();
+        ASSERT_EQ(1, match_pile.get_remaining_matches());
         ASSERT_EQ(4, players[0]->get_matches_removed());
-        ASSERT_EQ(5, players[1]->get_matches_removed());
+        ASSERT_EQ(4, players[1]->get_matches_removed());
     }
 }

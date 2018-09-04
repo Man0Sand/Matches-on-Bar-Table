@@ -73,14 +73,14 @@ cl_player_computer::cl_player_computer(std::string player_name, E_difficulty dif
 {
 }
 
-int cl_player_computer::play_turn(int remaining_matches)
+void cl_player_computer::play_turn()
 {
     srand(time(0));
 
     bool choose_randomly = determine_randomness(m_difficulty);
-    int matches_to_remove = choose_matches(remaining_matches, choose_randomly);
+    int matches_to_remove = choose_matches(p_match_pile_->get_remaining_matches(), choose_randomly);
     m_matches_removed += matches_to_remove;
-    return matches_to_remove;
+    p_match_pile_->remove_matches(matches_to_remove);
 }
 
 bool cl_player_computer::determine_randomness(E_difficulty difficulty)
@@ -140,20 +140,20 @@ kb_buffer_(kb_buffer)
 {
 }
 
-int cl_player_human::play_turn(int remaining_matches)
+void cl_player_human::play_turn()
 {
     int matches_to_remove = 0;
 
     std::cout << "Give the number of matches (1-3) to remove.";
     
-    while (matches_to_remove == 0 || matches_to_remove > remaining_matches)
+    while (matches_to_remove == 0 || matches_to_remove > p_match_pile_->get_remaining_matches())
     {
         matches_to_remove = pick_matches();
     }
 
     m_matches_removed += matches_to_remove;
-
-    return matches_to_remove;
+    
+    p_match_pile_->remove_matches(matches_to_remove);
 }
 
 int cl_player_human::pick_matches()
