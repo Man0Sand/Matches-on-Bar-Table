@@ -3,6 +3,7 @@
 
 #include "game.h"
 #include "menu.h"
+#include "matchpile.h"
 
 #include "I_keyboard_buffer.h"
 

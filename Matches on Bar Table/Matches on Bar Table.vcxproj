@@ -130,6 +130,7 @@
     <ClInclude Include="cl_selector.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="I_keyboard_buffer.h" />
+    <ClInclude Include="I_match_pile.h" />
     <ClInclude Include="keyboard_buffer.h" />
     <ClInclude Include="keyboard_buffer_mock.h" />
     <ClInclude Include="main_menu.h" />

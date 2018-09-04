@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "player.h"
+#include "matchpile.h"
 
 namespace
 {

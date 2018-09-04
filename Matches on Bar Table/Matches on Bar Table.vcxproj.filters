@@ -92,5 +92,8 @@
     <ClInclude Include="user_IO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="I_match_pile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

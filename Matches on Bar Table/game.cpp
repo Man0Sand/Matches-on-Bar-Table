@@ -2,9 +2,8 @@
 #include "game.h"
 
 #include "screen_buffer.h"
-#include "I_keyboard_buffer.h"
 
-cl_game::cl_game(I_KeyboardBuffer& kb_buffer, cl_matchpile* p_match_pile, std::vector<cl_player*> p_players) :
+cl_game::cl_game(I_KeyboardBuffer& kb_buffer, I_MatchPile* p_match_pile, std::vector<cl_player*> p_players) :
 kb_buffer_(kb_buffer),
 turn_(0),
 p_match_pile_(p_match_pile),

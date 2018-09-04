@@ -3,6 +3,7 @@
 #include "selector.h"
 #include "match.h"
 #include "player.h"
+#include "matchpile.h"
 
 #include "keyboard_buffer_mock.h"
 

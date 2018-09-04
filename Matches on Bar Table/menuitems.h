@@ -8,6 +8,7 @@
 #include "player.h"
 #include "cl_selector.h"
 #include "game.h"
+#include "matchpile.h"
 
 //----------------------------------------------------------------------------------------------------------------------------
 // cl_menuitem

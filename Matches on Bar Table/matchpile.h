@@ -6,10 +6,11 @@
 
 #include "match.h"
 #include "triangle.h"
+#include "I_match_pile.h"
 
 typedef std::vector<std::vector<cl_match*>> T_match_grid;
 
-class cl_matchpile
+class cl_matchpile : public I_MatchPile
 {
 public:
     enum e_pick_matches_randomly

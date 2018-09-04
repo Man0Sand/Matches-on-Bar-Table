@@ -2,6 +2,7 @@
 #include "player.h"
 
 #include "keyboard_buffer_mock.h"
+#include "matchpile.h"
 
 namespace
 {

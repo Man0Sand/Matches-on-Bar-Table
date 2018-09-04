@@ -1,11 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "matchpile.h"
 #include "player.h"
 #include <vector>
 #include "selector.h"
 #include "I_keyboard_buffer.h"
+#include "I_match_pile.h"
 
 class cl_game
 {
@@ -21,7 +21,7 @@ public:
         E_number_of_players number_of_players;
         std::vector<cl_player::T_config> player_config;
     };   
-    cl_game(I_KeyboardBuffer& kb_buffer, cl_matchpile* p_match_pile, std::vector<cl_player*> p_players);
+    cl_game(I_KeyboardBuffer& kb_buffer, I_MatchPile* p_match_pile, std::vector<cl_player*> p_players);
     virtual ~cl_game();
     void play_game(void);
 	cl_player* p_get_active_player();
@@ -31,7 +31,7 @@ private:
     // Variables
     I_KeyboardBuffer& kb_buffer_;
     int turn_;
-    cl_matchpile* p_match_pile_;
+    I_MatchPile* p_match_pile_;
     std::vector<cl_player*> p_players_;
     Selector<cl_player*> p_active_player_;
 
