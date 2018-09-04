@@ -95,5 +95,8 @@
     <ClInclude Include="I_match_pile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="match_pile_mock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
