@@ -16,19 +16,19 @@ namespace
             p_match_pile = new cl_matchpile(pile_settings);
             for (int i = 0; i < player_settings.number_of_players; ++i)
             {
-                p_players.push_back(cl_player::create(kb_buffer_mock, player_settings.player_config[i]));
+                p_players.push_back(cl_player::create(kb_buffer_mock, player_settings.player_config[i], p_match_pile));
             }
             p_Game = new cl_game(kb_buffer_mock, p_match_pile, p_players);
 		}
 
 		virtual void TearDown()
 		{
+            delete p_Game;
             for (cl_player* p_player : p_players)
             {
                 //delete p_player;    // wonder why this causes SEH exception...
             }
             delete p_match_pile;
-            delete p_Game;
 		}
 
         cl_game::T_player_settings player_settings = { cl_game::TWO,{ { "Tietsari 1", cl_player::COMPUTER, cl_player::HARD },{ "Tietsari 2", cl_player::COMPUTER, cl_player::HARD } } };

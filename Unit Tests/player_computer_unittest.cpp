@@ -12,15 +12,20 @@ namespace
 	protected:
 		virtual void SetUp()
 		{
-			p_Computer = new cl_player_computer(PlayerName, Difficulty);
+            p_match_pile = new cl_matchpile(pile_settings);
+            p_Computer = new cl_player_computer(PlayerName, Difficulty, p_match_pile);
 		}
 
 		virtual void TearDown()
 		{
 			delete p_Computer;
+            delete p_match_pile;
 		}
 
 		cl_player_computer* p_Computer;
+        cl_matchpile* p_match_pile;
+        cl_matchpile::MatchPileSettings pile_settings = { 2, cl_matchpile::NO };
+
 	};
 
 	TEST_F(ComputerPlayer_Test, Constructor)

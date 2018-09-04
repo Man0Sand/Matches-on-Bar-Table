@@ -7,7 +7,8 @@
 //----------------------------------------------------------------------------------------------------------------------------
 // cl_player
 //----------------------------------------------------------------------------------------------------------------------------
-cl_player::cl_player(std::string player_type, std::string player_name):
+cl_player::cl_player(std::string player_type, std::string player_name, cl_matchpile* p_match_pile):
+p_match_pile_(p_match_pile),
 m_matches_removed(0),
 m_player_type(player_type),
 m_player_name(player_name)
@@ -33,15 +34,15 @@ int cl_player::get_matches_removed()
     return m_matches_removed;
 }
 
-cl_player* cl_player::create(I_KeyboardBuffer& kb_buffer, const cl_player::T_config& player_config)
+cl_player* cl_player::create(I_KeyboardBuffer& kb_buffer, const cl_player::T_config& player_config, cl_matchpile* p_match_pile)
 {
     if (player_config.type == HUMAN)
     {
-        return new cl_player_human(kb_buffer, player_config.name);
+        return new cl_player_human(kb_buffer, player_config.name, p_match_pile);
     }
     if (player_config.type == COMPUTER)
     {
-        return new cl_player_computer(player_config.name, player_config.difficulty);
+        return new cl_player_computer(player_config.name, player_config.difficulty, p_match_pile);
     }
 }
 
@@ -66,8 +67,8 @@ static int rand_int(int a, int b)
     return rand_int_hi_lo(a, b);
 }
 
-cl_player_computer::cl_player_computer(std::string player_name, E_difficulty difficulty) :
-    cl_player("computer", player_name),
+cl_player_computer::cl_player_computer(std::string player_name, E_difficulty difficulty, cl_matchpile* p_match_pile) :
+    cl_player("computer", player_name, p_match_pile),
     m_difficulty(difficulty)
 {
 }
@@ -133,8 +134,8 @@ int cl_player_computer::choose_matches(int matches_left, bool choose_randomly)
 //----------------------------------------------------------------------------------------------------------------------------
 // cl_player_human
 //----------------------------------------------------------------------------------------------------------------------------
-cl_player_human::cl_player_human(I_KeyboardBuffer& kb_buffer, std::string player_name) :
-cl_player("human", player_name),
+cl_player_human::cl_player_human(I_KeyboardBuffer& kb_buffer, std::string player_name, cl_matchpile* p_matchpile) :
+cl_player("human", player_name, p_matchpile),
 kb_buffer_(kb_buffer)
 {
 }

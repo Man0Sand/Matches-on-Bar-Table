@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "matchpile.h"
 #include "I_keyboard_buffer.h"
 
 class cl_player
@@ -30,19 +31,20 @@ public:
         E_type type;
         E_difficulty difficulty;
     };
-    static cl_player* create(I_KeyboardBuffer& kb_buffer, const T_config& player_config);
+    static cl_player* create(I_KeyboardBuffer& kb_buffer, const T_config& player_config, cl_matchpile* p_match_pile);
 
-    protected:
+protected:
+    cl_matchpile* p_match_pile_;
     int m_matches_removed;
     const std::string m_player_type;
     const std::string m_player_name;
-    cl_player(std::string player_type, std::string player_name);
+    cl_player(std::string player_type, std::string player_name, cl_matchpile* p_match_pile);
  };
 
 class cl_player_computer : public cl_player
 {
 public:
-    cl_player_computer(std::string player_name, E_difficulty difficulty);
+    cl_player_computer(std::string player_name, E_difficulty difficulty, cl_matchpile* p_match_pile);
     int play_turn(int remaining_matches);
     bool determine_randomness(E_difficulty difficulty);
     int choose_matches(int matches_left, bool choose_randomly);
@@ -56,7 +58,7 @@ private:
 class cl_player_human : public cl_player
 {
 public:
-    cl_player_human(I_KeyboardBuffer& kb_buffer, std::string player_name);
+    cl_player_human(I_KeyboardBuffer& kb_buffer, std::string player_name, cl_matchpile* p_matchpile);
     int pick_matches();
     int play_turn(int remaining_matches);
 private:

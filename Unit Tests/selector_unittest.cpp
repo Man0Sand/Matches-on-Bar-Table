@@ -224,11 +224,13 @@ namespace
     TEST(SelectorTestPlayer, Everything)
     {
         KeyboardBufferMock kb_buffer_mock = KeyboardBufferMock({keyboardbuffer::kThree, keyboardbuffer::kOne});
-        cl_player_human human_player(kb_buffer_mock, "Pelimies");
+        cl_matchpile::MatchPileSettings pile_settings = { 2, cl_matchpile::NO };
+        cl_matchpile match_pile = cl_matchpile(pile_settings);
+        cl_player_human human_player(kb_buffer_mock, "Pelimies", &match_pile);
 
         std::vector<cl_player*> players;
         players.push_back(&human_player);
-        players.push_back(new cl_player_computer("Tietsa", cl_player::HARD));
+        players.push_back(new cl_player_computer("Tietsa", cl_player::HARD, &match_pile));
 
         Selector<cl_player*> player_selector(&players, &players[0]);
 
