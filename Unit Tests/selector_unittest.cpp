@@ -231,7 +231,7 @@ namespace
 
         std::vector<cl_player*> players;
         players.push_back(&human_player);
-        players.push_back(new cl_player_computer("Tietsa", cl_player::HARD, &match_pile));
+        players.push_back(new cl_player_computer("Tietsa", 42, cl_player::HARD, &match_pile));
 
         Selector<cl_player*> player_selector(&players, &players[0]);
 

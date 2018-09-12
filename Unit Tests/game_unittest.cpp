@@ -17,7 +17,7 @@ namespace
             p_match_pile = new cl_matchpile(pile_settings);
             for (int i = 0; i < player_settings.number_of_players; ++i)
             {
-                p_players.push_back(cl_player::create(kb_buffer_mock, player_settings.player_config[i], p_match_pile));
+                p_players.push_back(cl_player::create(kb_buffer_mock, 42, player_settings.player_config[i], p_match_pile));
             }
             p_Game = new cl_game(kb_buffer_mock, p_match_pile, p_players);
 		}

@@ -21,9 +21,6 @@
     <ClCompile Include="game_unittest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gtest_main.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="match_unittest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,6 +38,9 @@
     </ClCompile>
     <ClCompile Include="triangle_unittest.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtest_main.cc">
+      <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ namespace
         int pick_match(int matches_before, cl_player_computer::E_difficulty difficulty)
         {
             MatchPileMock match_pile = MatchPileMock(matches_before);
-            cl_player_computer player = cl_player_computer("Tietsa", difficulty, &match_pile);
+            cl_player_computer player = cl_player_computer("Tietsa", 42, difficulty, &match_pile);
             cl_player* p_player = &player;
             p_player->play_turn();
             return matches_before - match_pile.get_remaining_matches();
@@ -42,7 +42,7 @@ namespace
             std::vector<double> occurrences_realized = { 0.0, 0.0, 0.0 };
 
             MatchPileMock pile = MatchPileMock(matches_before);
-            cl_player_computer player = cl_player_computer("Tietsa", cl_player::EASY, &pile);
+            cl_player_computer player = cl_player_computer("Tietsa", 42, difficulty, &pile);
 
             for (int i = 0; i < repeats; ++i)
             {
@@ -52,13 +52,11 @@ namespace
                 occurrences_realized[matches_picked - 1] += 1.0;
             }
 
-            //std::cout << "Occurrences: [" << occurrences_realized[0] << ", " << occurrences_realized[1] << ", " << occurrences_realized[2] << "]\n";
             std::vector<double> averages_realized = { 0.0, 0.0, 0.0 };
             for (unsigned int i = 0; i < occurrences_realized.size(); ++i)
             {
                 averages_realized[i] = occurrences_realized[i] / repeats;
             }
-            //std::cout << "Averages: [" << averages_realized[0] << ", " << averages_realized[1] << ", " << averages_realized[2] << "]\n";
 
             double allowed_deviation = 0.25;
             std::vector<double> allowed_deviations = { 0.0, 0.0, 0.0 };
@@ -104,8 +102,6 @@ namespace
         verify_match_statistical(7, { 0.33, 0.33, 0.33 }, difficulty, "7 matches left");
         verify_match_statistical(8, { 0.33, 0.33, 0.33 }, difficulty, "8 matches left");
         verify_match_statistical(9, { 0.33, 0.33, 0.33 }, difficulty, "9 matches left");
-        //KeyboardBuffer kb_buffer = KeyboardBuffer::GetInstance();
-        //kb_buffer.WaitUntilInput({ keyboardbuffer::kEnter });
     }
 
     TEST_F(ComputerPlayer_Test, PickMatchesMedium)
@@ -121,8 +117,43 @@ namespace
         verify_match_statistical(7, { 0.17, 0.67, 0.17 }, difficulty, "7 matches left");
         verify_match_statistical(8, { 0.17, 0.17, 0.67 }, difficulty, "8 matches left");
         verify_match_statistical(9, { 0.67, 0.17, 0.17 }, difficulty, "9 matches left");
-        //KeyboardBuffer kb_buffer = KeyboardBuffer::GetInstance();
-        //kb_buffer.WaitUntilInput({ keyboardbuffer::kEnter });
+    }
+
+    TEST(ComputerRandomizerTest, TestMatchCount)
+    {
+        ComputerRandomizer randomizer = ComputerRandomizer(42);
+        
+        std::vector<int> nums(3);
+        for (int i = 0; i < 1000; ++i)
+        {
+            int match_count = randomizer.match_count();
+            ++nums[match_count - 1];
+        }
+
+        ASSERT_NEAR(333, nums[0], 33);
+        ASSERT_NEAR(333, nums[1], 33);
+        ASSERT_NEAR(333, nums[2], 33);
+    }
+
+    TEST(ComputerRandomizerTest, TestRandomness)
+    {
+        ComputerRandomizer randomizer = ComputerRandomizer(42);
+
+        std::vector<int> bools(2);
+        for (int i = 0; i < 1000; ++i)
+        {
+            if (randomizer.randomness())
+            {
+                ++bools[1];
+            }
+            else
+            {
+                ++bools[0];
+            }
+        }
+        
+        ASSERT_NEAR(500, bools[0], 50);
+        ASSERT_NEAR(500, bools[1], 50);
     }
 
 }	//namespace
