@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "menuitems.h"
 #include "menu.h"
 #include "user_IO.h"
@@ -168,7 +170,7 @@ bool cl_menuitem_start_game::enter_pressed()
     std::vector<cl_player*> p_players(m_player_settings.number_of_players);
     for (int i = 0; i < m_player_settings.number_of_players; ++i)
     {
-        p_players[i] = cl_player::create(KeyboardBuffer::GetInstance(), m_player_settings.player_config[i], &match_pile);
+        p_players[i] = cl_player::create(KeyboardBuffer::GetInstance(), static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()), m_player_settings.player_config[i], &match_pile);
     }
     
     cl_game game(KeyboardBuffer::GetInstance(), &match_pile, p_players);

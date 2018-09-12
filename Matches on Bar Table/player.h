@@ -5,7 +5,11 @@
 
 #include "I_match_pile.h"
 #include "I_keyboard_buffer.h"
+#include "computer_randomizer.h"
 
+//----------------------------------------------------------------------------------------------------------------------------
+// cl_player
+//----------------------------------------------------------------------------------------------------------------------------
 class cl_player
 {
 public:
@@ -31,7 +35,7 @@ public:
         E_type type;
         E_difficulty difficulty;
     };
-    static cl_player* create(I_KeyboardBuffer& kb_buffer, const T_config& player_config, I_MatchPile* p_match_pile);
+    static cl_player* create(I_KeyboardBuffer& kb_buffer, unsigned randomizer_seed, const T_config& player_config, I_MatchPile* p_match_pile);
 
 protected:
     // Variables
@@ -45,20 +49,27 @@ protected:
     cl_player(std::string player_type, std::string player_name, I_MatchPile* p_match_pile);
  };
 
+//----------------------------------------------------------------------------------------------------------------------------
+// cl_player_computer
+//----------------------------------------------------------------------------------------------------------------------------
 class cl_player_computer : public cl_player
 {
 public:
-    cl_player_computer(std::string player_name, E_difficulty difficulty, I_MatchPile* p_match_pile);
-    bool determine_randomness(E_difficulty difficulty);
+    cl_player_computer(std::string player_name, unsigned randomizer_seed, E_difficulty difficulty, I_MatchPile* p_match_pile);
+    bool determine_randomness();
 
 private:
     // Variables
     const E_difficulty m_difficulty;
+    ComputerRandomizer randomizer;
     // Functions
     int choose_matches() override;
     int pick_matches(int matches_left, bool choose_randomly);
 };
 
+//----------------------------------------------------------------------------------------------------------------------------
+// cl_player_human
+//----------------------------------------------------------------------------------------------------------------------------
 class cl_player_human : public cl_player
 {
 public:

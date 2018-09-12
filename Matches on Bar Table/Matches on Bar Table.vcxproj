@@ -171,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_selector.h" />
+    <ClInclude Include="computer_randomizer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="I_keyboard_buffer.h" />
     <ClInclude Include="I_match_pile.h" />

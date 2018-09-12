@@ -1,5 +1,3 @@
-#include <time.h>
-#include <stdlib.h>
 #include <iostream>
 
 #include "player.h"
@@ -41,7 +39,7 @@ void cl_player::play_turn()
     p_match_pile_->remove_matches(matches_to_remove);
 }
 
-cl_player* cl_player::create(I_KeyboardBuffer& kb_buffer, const cl_player::T_config& player_config, I_MatchPile* p_match_pile)
+cl_player* cl_player::create(I_KeyboardBuffer& kb_buffer, unsigned randomizer_seed, const cl_player::T_config& player_config, I_MatchPile* p_match_pile)
 {
     if (player_config.type == HUMAN)
     {
@@ -49,46 +47,28 @@ cl_player* cl_player::create(I_KeyboardBuffer& kb_buffer, const cl_player::T_con
     }
     if (player_config.type == COMPUTER)
     {
-        return new cl_player_computer(player_config.name, player_config.difficulty, p_match_pile);
+        return new cl_player_computer(player_config.name, randomizer_seed, player_config.difficulty, p_match_pile);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------
 // cl_player_computer
 //----------------------------------------------------------------------------------------------------------------------------
-static void swap_int(int* a, int* b)
-{
-    int tmp = *a;
-    *a = *b;
-    *b = tmp;
-}
-
-static inline int rand_int_hi_lo(int upper, int lower)
-{
-    return((rand() % (upper - lower + 1)) + lower);
-}
-
-static int rand_int(int a, int b)
-{
-    if (b > a) swap_int(&a, &b);
-    return rand_int_hi_lo(a, b);
-}
-
-cl_player_computer::cl_player_computer(std::string player_name, E_difficulty difficulty, I_MatchPile* p_match_pile) :
+cl_player_computer::cl_player_computer(std::string player_name, unsigned randomizer_seed, E_difficulty difficulty, I_MatchPile* p_match_pile) :
     cl_player("computer", player_name, p_match_pile),
-    m_difficulty(difficulty)
+    m_difficulty(difficulty),
+    randomizer(randomizer_seed)
 {
-    srand(time(0));
 }
 
 int cl_player_computer::choose_matches()
 {
-    return pick_matches(p_match_pile_->get_remaining_matches(), determine_randomness(m_difficulty));
+    return pick_matches(p_match_pile_->get_remaining_matches(), determine_randomness());
 }
 
-bool cl_player_computer::determine_randomness(E_difficulty difficulty)
+bool cl_player_computer::determine_randomness()
 {
-    if (difficulty == EASY || (difficulty == MEDIUM && rand_int(0, 1) == 1))
+    if (m_difficulty == EASY || (m_difficulty == MEDIUM && randomizer.randomness()))
     {
         return true;
     }
@@ -102,7 +82,7 @@ int cl_player_computer::pick_matches(int matches_left, bool choose_randomly)
 
     if (choose_randomly)
     {
-        matches_to_remove = rand_int(1, 3);
+        matches_to_remove = randomizer.match_count();
 
         while (matches_left < matches_to_remove)
         {

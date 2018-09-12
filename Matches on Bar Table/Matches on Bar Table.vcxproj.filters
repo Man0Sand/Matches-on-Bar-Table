@@ -98,5 +98,8 @@
     <ClInclude Include="match_pile_mock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="computer_randomizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
