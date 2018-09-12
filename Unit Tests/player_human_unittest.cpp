@@ -15,7 +15,7 @@ namespace
         
         MatchPileMock match_pile = MatchPileMock(10);
         
-        cl_player_human* p_Human = new cl_player_human(kb_buffer_mock, PlayerName, &match_pile);
+        cl_player* p_Human = new cl_player_human(kb_buffer_mock, PlayerName, &match_pile);
         ASSERT_EQ("Ihminen", p_Human->get_player_name());
 	}
 
@@ -25,7 +25,7 @@ namespace
 
         MatchPileMock match_pile = MatchPileMock(3);
 
-        cl_player_human* p_Human = new cl_player_human(kb_buffer_mock, PlayerName, &match_pile);
+        cl_player* p_Human = new cl_player_human(kb_buffer_mock, PlayerName, &match_pile);
         p_Human->play_turn();
         ASSERT_EQ(0, match_pile.get_remaining_matches());
 	}
@@ -36,7 +36,7 @@ namespace
 
         MatchPileMock match_pile = MatchPileMock(2);
 
-        cl_player_human* p_Human = new cl_player_human(kb_buffer_mock, PlayerName, &match_pile);
+        cl_player* p_Human = new cl_player_human(kb_buffer_mock, PlayerName, &match_pile);
         p_Human->play_turn();
         ASSERT_EQ(0, match_pile.get_remaining_matches());
 	}
@@ -47,7 +47,7 @@ namespace
 
         MatchPileMock match_pile = MatchPileMock(1);
 
-        cl_player_human* p_Human = new cl_player_human(kb_buffer_mock, PlayerName, &match_pile);
+        cl_player* p_Human = new cl_player_human(kb_buffer_mock, PlayerName, &match_pile);
         p_Human->play_turn();
         ASSERT_EQ(0, match_pile.get_remaining_matches());
 	}

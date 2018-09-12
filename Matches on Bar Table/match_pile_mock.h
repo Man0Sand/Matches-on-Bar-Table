@@ -23,6 +23,11 @@ public:
         number_of_matches_ -= match_count;
     }
 
+    void set_matches(int match_count)
+    {
+        number_of_matches_ = match_count;
+    }
+
 private:
     int number_of_matches_;
 };

@@ -1,129 +1,128 @@
 #include "gtest/gtest.h"
+
+#include <vector>
+
 #include "player.h"
 #include "matchpile.h"
+#include "match_pile_mock.h"
+#include "keyboard_buffer_mock.h"
+#include "keyboard_buffer.h"
 
 namespace
 {
-	// Constants
-	std::string PlayerName = "Tietsari";
-	cl_player::E_difficulty Difficulty = cl_player::HARD;
-
 	class ComputerPlayer_Test : public testing::Test
 	{
 	protected:
 		virtual void SetUp()
 		{
-            p_match_pile = new cl_matchpile(pile_settings);
-            p_Computer = new cl_player_computer(PlayerName, Difficulty, p_match_pile);
 		}
 
 		virtual void TearDown()
 		{
-			delete p_Computer;
-            delete p_match_pile;
 		}
 
-		cl_player_computer* p_Computer;
-        cl_matchpile* p_match_pile;
-        cl_matchpile::MatchPileSettings pile_settings = { 2, cl_matchpile::NO };
+        int pick_match(int matches_before, cl_player_computer::E_difficulty difficulty)
+        {
+            MatchPileMock match_pile = MatchPileMock(matches_before);
+            cl_player_computer player = cl_player_computer("Tietsa", difficulty, &match_pile);
+            cl_player* p_player = &player;
+            p_player->play_turn();
+            return matches_before - match_pile.get_remaining_matches();
+        }
+
+        void verify_match(int matches_before, int matches_picked_expected, cl_player_computer::E_difficulty difficulty)
+        {
+            int matches_picked = pick_match(matches_before, difficulty);
+            ASSERT_EQ(matches_picked_expected, matches_picked);
+        }
+
+        void verify_match_statistical(int matches_before, std::vector<double> averages_expected, cl_player::E_difficulty difficulty, std::string fail_msg)
+        {
+            double repeats = 1000.0;
+            std::vector<double> occurrences_realized = { 0.0, 0.0, 0.0 };
+
+            MatchPileMock pile = MatchPileMock(matches_before);
+            cl_player_computer player = cl_player_computer("Tietsa", cl_player::EASY, &pile);
+
+            for (int i = 0; i < repeats; ++i)
+            {
+                pile.set_matches(matches_before);
+                player.play_turn();
+                int matches_picked = matches_before - pile.get_remaining_matches();
+                occurrences_realized[matches_picked - 1] += 1.0;
+            }
+
+            //std::cout << "Occurrences: [" << occurrences_realized[0] << ", " << occurrences_realized[1] << ", " << occurrences_realized[2] << "]\n";
+            std::vector<double> averages_realized = { 0.0, 0.0, 0.0 };
+            for (unsigned int i = 0; i < occurrences_realized.size(); ++i)
+            {
+                averages_realized[i] = occurrences_realized[i] / repeats;
+            }
+            //std::cout << "Averages: [" << averages_realized[0] << ", " << averages_realized[1] << ", " << averages_realized[2] << "]\n";
+
+            double allowed_deviation = 0.25;
+            std::vector<double> allowed_deviations = { 0.0, 0.0, 0.0 };
+            for (unsigned int i = 0; i < allowed_deviations.size(); ++i)
+            {
+                allowed_deviations[i] = allowed_deviation * averages_expected[i];
+            }
+
+            for (unsigned int i = 0; i < averages_realized.size(); ++i)
+            {
+                std::string fail_msg_complete = fail_msg + ", occurrence of " + std::to_string(i + 1) + " match(es)";
+                ASSERT_NEAR(averages_expected[i], averages_realized[i], allowed_deviation*averages_expected[i]) << fail_msg_complete;
+            }
+        }
 
 	};
 
-	TEST_F(ComputerPlayer_Test, Constructor)
-	{
-		ASSERT_EQ("Tietsari", p_Computer->get_player_name());
-		ASSERT_EQ("computer", p_Computer->get_player_type());
-	}
+    TEST_F(ComputerPlayer_Test, PickMatchesHard)
+    {
+        cl_player::E_difficulty difficulty = cl_player::HARD;
 
-	TEST_F(ComputerPlayer_Test, ChooseSmartly)
-	{
-		ASSERT_EQ(3, p_Computer->choose_matches(4, false));
-		ASSERT_EQ(2, p_Computer->choose_matches(3, false));
-		ASSERT_EQ(1, p_Computer->choose_matches(2, false));
-		ASSERT_EQ(1, p_Computer->choose_matches(1, false));
-		ASSERT_EQ(3, p_Computer->choose_matches(8, false));
-		ASSERT_EQ(2, p_Computer->choose_matches(7, false));
-		ASSERT_EQ(1, p_Computer->choose_matches(6, false));
-		ASSERT_EQ(1, p_Computer->choose_matches(5, false));
-	}
+        verify_match(1, 1, difficulty);
+        verify_match(2, 1, difficulty);
+        verify_match(3, 2, difficulty);
+        verify_match(4, 3, difficulty);
+        verify_match(5, 1, difficulty);
+        verify_match(6, 1, difficulty);
+        verify_match(7, 2, difficulty);
+        verify_match(8, 3, difficulty);
+        verify_match(9, 1, difficulty);
+    }
 
-	TEST_F(ComputerPlayer_Test, DetermineRandomness)
-	{
-		ASSERT_EQ(true, p_Computer->determine_randomness(cl_player::EASY));
-		ASSERT_EQ(false, p_Computer->determine_randomness(cl_player::HARD));
+    TEST_F(ComputerPlayer_Test, PickMatchesEasy)
+    {
+        cl_player::E_difficulty difficulty = cl_player::EASY;
 
-		// Test medium difficulty: verify that 49-51 % of cases are random
-		float num_of_tests = 10000.0;
-		float num_of_randoms = 0.0;
-		for (int i = 0; i < num_of_tests; ++i)
-		{
-			if (p_Computer->determine_randomness(cl_player::MEDIUM))
-			{
-				num_of_randoms += 1.0;
-			}
-		}
-		ASSERT_NEAR(0.5, num_of_randoms / num_of_tests, 0.01);
-	}
+        verify_match_statistical(1, { 1.00, 0.00, 0.00 }, difficulty, "1 match left");
+        verify_match_statistical(2, { 0.33, 0.67, 0.00 }, difficulty, "2 matches left");
+        verify_match_statistical(3, { 0.33, 0.33, 0.33 }, difficulty, "3 matches left");
+        verify_match_statistical(4, { 0.33, 0.33, 0.33 }, difficulty, "4 matches left");
+        verify_match_statistical(5, { 0.33, 0.33, 0.33 }, difficulty, "5 matches left");
+        verify_match_statistical(6, { 0.33, 0.33, 0.33 }, difficulty, "6 matches left");
+        verify_match_statistical(7, { 0.33, 0.33, 0.33 }, difficulty, "7 matches left");
+        verify_match_statistical(8, { 0.33, 0.33, 0.33 }, difficulty, "8 matches left");
+        verify_match_statistical(9, { 0.33, 0.33, 0.33 }, difficulty, "9 matches left");
+        //KeyboardBuffer kb_buffer = KeyboardBuffer::GetInstance();
+        //kb_buffer.WaitUntilInput({ keyboardbuffer::kEnter });
+    }
 
-	// Test random choosing: verify that all number of matches have 32-34 % likelyhood
-	TEST_F(ComputerPlayer_Test, ChooseRandomlyUnlimited)
-	{
-		float num_of_tests = 10000.0;
-		float num_of_ones = 0.0;
-		float num_of_twos = 0.0;
-		float num_of_threes = 0.0;
+    TEST_F(ComputerPlayer_Test, PickMatchesMedium)
+    {
+        cl_player::E_difficulty difficulty = cl_player::MEDIUM;
 
-		for (int i = 0; i < num_of_tests; ++i)
-		{
-			int number_of_matches = p_Computer->choose_matches(10, true);
-			if (number_of_matches == 1)
-			{
-				num_of_ones += 1.0;
-			}
-			else if (number_of_matches == 2)
-			{
-				num_of_twos += 1.0;
-			}
-			else if (number_of_matches == 3)
-			{
-				num_of_threes += 1.0;
-			}
-		}
-
-		ASSERT_NEAR(1.0 / 3.0, num_of_ones / num_of_tests, 0.01);
-		ASSERT_NEAR(1.0 / 3.0, num_of_twos / num_of_tests, 0.01);
-		ASSERT_NEAR(1.0 / 3.0, num_of_threes / num_of_tests, 0.01);
-	}
-
-	// Test random choosing when picking from a pile that has 2 matches: Verify that 
-	// 1 match has 32-34 % likelyhood and two matches 66-68 % likelyhood
-	TEST_F(ComputerPlayer_Test, ChooseRandomlyLimited)
-	{
-		float num_of_tests = 10000.0;
-		float num_of_ones = 0.0;
-		float num_of_twos = 0.0;
-
-		for (int i = 0; i < num_of_tests; ++i)
-		{
-			int number_of_matches = p_Computer->choose_matches(2, true);
-			if (number_of_matches == 1)
-			{
-				num_of_ones += 1.0;
-			}
-			else if (number_of_matches == 2)
-			{
-				num_of_twos += 1.0;
-			}
-		}
-
-		ASSERT_NEAR(1.0 / 3.0, num_of_ones / num_of_tests, 0.01);
-		ASSERT_NEAR(2.0 / 3.0, num_of_twos / num_of_tests, 0.01);
-	}
-
-	TEST_F(ComputerPlayer_Test, PlayTurn)
-	{
-		p_Computer->play_turn();
-        ASSERT_EQ(8, p_match_pile->get_remaining_matches());
-	}
+        verify_match_statistical(1, { 1.00, 0.00, 0.00 }, difficulty, "1 match left");
+        verify_match_statistical(2, { 0.67, 0.33, 0.00 }, difficulty, "2 matches left");
+        verify_match_statistical(3, { 0.17, 0.67, 0.17 }, difficulty, "3 matches left");
+        verify_match_statistical(4, { 0.17, 0.17, 0.67 }, difficulty, "4 matches left");
+        verify_match_statistical(5, { 0.67, 0.17, 0.17 }, difficulty, "5 matches left");
+        verify_match_statistical(6, { 0.67, 0.17, 0.17 }, difficulty, "6 matches left");
+        verify_match_statistical(7, { 0.17, 0.67, 0.17 }, difficulty, "7 matches left");
+        verify_match_statistical(8, { 0.17, 0.17, 0.67 }, difficulty, "8 matches left");
+        verify_match_statistical(9, { 0.67, 0.17, 0.17 }, difficulty, "9 matches left");
+        //KeyboardBuffer kb_buffer = KeyboardBuffer::GetInstance();
+        //kb_buffer.WaitUntilInput({ keyboardbuffer::kEnter });
+    }
 
 }	//namespace

@@ -34,6 +34,13 @@ int cl_player::get_matches_removed()
     return m_matches_removed;
 }
 
+void cl_player::play_turn()
+{
+    int matches_to_remove = choose_matches();
+    m_matches_removed += matches_to_remove;
+    p_match_pile_->remove_matches(matches_to_remove);
+}
+
 cl_player* cl_player::create(I_KeyboardBuffer& kb_buffer, const cl_player::T_config& player_config, I_MatchPile* p_match_pile)
 {
     if (player_config.type == HUMAN)
@@ -71,16 +78,12 @@ cl_player_computer::cl_player_computer(std::string player_name, E_difficulty dif
     cl_player("computer", player_name, p_match_pile),
     m_difficulty(difficulty)
 {
+    srand(time(0));
 }
 
-void cl_player_computer::play_turn()
+int cl_player_computer::choose_matches()
 {
-    srand(time(0));
-
-    bool choose_randomly = determine_randomness(m_difficulty);
-    int matches_to_remove = choose_matches(p_match_pile_->get_remaining_matches(), choose_randomly);
-    m_matches_removed += matches_to_remove;
-    p_match_pile_->remove_matches(matches_to_remove);
+    return pick_matches(p_match_pile_->get_remaining_matches(), determine_randomness(m_difficulty));
 }
 
 bool cl_player_computer::determine_randomness(E_difficulty difficulty)
@@ -93,42 +96,31 @@ bool cl_player_computer::determine_randomness(E_difficulty difficulty)
     return false;
 }
 
-int cl_player_computer::choose_matches_randomly(int matches_left)
-{
-    int matches_to_remove = rand_int(1, 3);
-
-    while (matches_left < matches_to_remove)
-    {
-        --matches_to_remove;
-    }
-
-    return matches_to_remove;
-}
-
-int cl_player_computer::choose_matches_smartly(int matches_left)
+int cl_player_computer::pick_matches(int matches_left, bool choose_randomly)
 {
     int matches_to_remove = 0;
 
-    for (int i = 3; i > 0; --i)
-    {
-        matches_to_remove = i;
-        if (!((matches_left - 1 - matches_to_remove) % 4))
-        {
-            break;
-        }
-    }
-
-    return matches_to_remove;
-}
-
-int cl_player_computer::choose_matches(int matches_left, bool choose_randomly)
-{
     if (choose_randomly)
     {
-        return choose_matches_randomly(matches_left);
-    }
+        matches_to_remove = rand_int(1, 3);
 
-    return choose_matches_smartly(matches_left);
+        while (matches_left < matches_to_remove)
+        {
+            --matches_to_remove;
+        }
+    }
+    else
+    {
+        for (int i = 3; i > 0; --i)
+        {
+            matches_to_remove = i;
+            if (!((matches_left - 1 - matches_to_remove) % 4))
+            {
+                break;
+            }
+        }
+    }
+    return matches_to_remove;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -140,23 +132,21 @@ kb_buffer_(kb_buffer)
 {
 }
 
-void cl_player_human::play_turn()
+int cl_player_human::choose_matches()
 {
     int matches_to_remove = 0;
 
     std::cout << "Give the number of matches (1-3) to remove.";
-    
-    while (matches_to_remove == 0 || matches_to_remove > p_match_pile_->get_remaining_matches())
+
+    while (matches_to_remove <= 0 || p_match_pile_->get_remaining_matches() < matches_to_remove)
     {
-        matches_to_remove = pick_matches();
+        matches_to_remove = get_user_input();
     }
 
-    m_matches_removed += matches_to_remove;
-    
-    p_match_pile_->remove_matches(matches_to_remove);
+    return matches_to_remove;
 }
 
-int cl_player_human::pick_matches()
+int cl_player_human::get_user_input()
 {
     int user_input = kb_buffer_.WaitUntilInput({ keyboardbuffer::kOne, keyboardbuffer::kTwo, keyboardbuffer::kThree });
     

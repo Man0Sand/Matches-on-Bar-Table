@@ -14,10 +14,6 @@ p_active_player_(&p_players_, &p_players_[0])
 
 cl_game::~cl_game()
 {
-    for (cl_player* p_player : p_players_)
-    {
-        delete p_player;
-    }
 }
 
 void cl_game::choose_player(void)
