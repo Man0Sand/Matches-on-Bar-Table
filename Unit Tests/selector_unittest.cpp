@@ -1,11 +1,12 @@
 #include "gtest/gtest.h"
 
-#include "selector.h"
+#include "human_player.h"
+#include "computer_player.h"
 #include "match.h"
-#include "player.h"
 #include "matchpile.h"
-
 #include "keyboard_buffer_mock.h"
+
+#include "selector.h"
 
 namespace
 {
@@ -227,13 +228,13 @@ namespace
         KeyboardBufferMock kb_buffer_mock = KeyboardBufferMock({keyboardbuffer::kThree, keyboardbuffer::kOne});
         cl_matchpile::MatchPileSettings pile_settings = { 2, cl_matchpile::NO };
         cl_matchpile match_pile = cl_matchpile(pile_settings);
-        cl_player_human human_player(kb_buffer_mock, "Pelimies", &match_pile);
+        HumanPlayer human_player(kb_buffer_mock, "Pelimies", &match_pile);
 
-        std::vector<cl_player*> players;
+        std::vector<Player*> players;
         players.push_back(&human_player);
-        players.push_back(new cl_player_computer("Tietsa", 42, cl_player::HARD, &match_pile));
+        players.push_back(new ComputerPlayer("Tietsa", 42, Player::HARD, &match_pile));
 
-        Selector<cl_player*> player_selector(&players, &players[0]);
+        Selector<Player*> player_selector(&players, &players[0]);
 
         // Human's turn
         player_selector->play_turn();

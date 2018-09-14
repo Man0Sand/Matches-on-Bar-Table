@@ -17,7 +17,7 @@ namespace
             p_match_pile = new cl_matchpile(pile_settings);
             for (int i = 0; i < player_settings.number_of_players; ++i)
             {
-                p_players.push_back(cl_player::create(kb_buffer_mock, 42, player_settings.player_config[i], p_match_pile));
+                p_players.push_back(Player::create(kb_buffer_mock, 42, player_settings.player_config[i], p_match_pile));
             }
             p_Game = new cl_game(kb_buffer_mock, p_match_pile, p_players);
 		}
@@ -25,19 +25,19 @@ namespace
 		virtual void TearDown()
 		{
             delete p_Game;
-            for (cl_player* p_player : p_players)
+            for (Player* p_player : p_players)
             {
                 //delete p_player;    // wonder why this causes SEH exception...
             }
             delete p_match_pile;
 		}
 
-        cl_game::T_player_settings player_settings = { cl_game::TWO,{ { "Tietsari 1", cl_player::COMPUTER, cl_player::HARD },{ "Tietsari 2", cl_player::COMPUTER, cl_player::HARD } } };
+        cl_game::T_player_settings player_settings = { cl_game::TWO,{ { "Tietsari 1", Player::COMPUTER, Player::HARD },{ "Tietsari 2", Player::COMPUTER, Player::HARD } } };
         cl_matchpile::MatchPileSettings pile_settings = { 2, cl_matchpile::NO };
 
         KeyboardBufferMock kb_buffer_mock = KeyboardBufferMock({keyboardbuffer::kOne});
         cl_matchpile* p_match_pile;
-        std::vector<cl_player*> p_players;
+        std::vector<Player*> p_players;
         cl_game* p_Game;
 	};
 

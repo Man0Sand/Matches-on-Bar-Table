@@ -8,10 +8,10 @@ MainMenu::MainMenu(I_KeyboardBuffer& kb_buffer):
 kb_buffer_(kb_buffer),
 player_settings_(   { cl_game::TWO,
                     {
-                    { "Player 1", cl_player::HUMAN, cl_player::EASY },
-                    { "Player 2", cl_player::HUMAN, cl_player::EASY },
-                    { "Player 3", cl_player::HUMAN, cl_player::EASY },
-                    { "Player 4", cl_player::HUMAN, cl_player::EASY }
+                    { "Player 1", Player::HUMAN, Player::EASY },
+                    { "Player 2", Player::HUMAN, Player::EASY },
+                    { "Player 3", Player::HUMAN, Player::EASY },
+                    { "Player 4", Player::HUMAN, Player::EASY }
                     }
                     }),
 pile_settings_({ 3, cl_matchpile::NO }),

@@ -3,7 +3,8 @@
 
 #include <vector>
 #include "match.h"
-#include "player.h"
+#include "human_player.h"
+#include "computer_player.h"
 #include "keyboard_buffer_mock.h"
 #include "matchpile.h"
 
@@ -162,15 +163,15 @@ namespace
 
         KeyboardBufferMock kb_keyboard_buffer_mock = KeyboardBufferMock({ keyboardbuffer::kThree, keyboardbuffer::kOne });
 
-	    cl_player_human human_player(kb_keyboard_buffer_mock, "Pelimies", &match_pile);
+	    HumanPlayer human_player(kb_keyboard_buffer_mock, "Pelimies", &match_pile);
 
-        std::vector<cl_player*> players;
+        std::vector<Player*> players;
         players.push_back(&human_player);
-        players.push_back(new cl_player_computer("Tietsa", 42, cl_player::HARD, &match_pile));
+        players.push_back(new ComputerPlayer("Tietsa", 42, Player::HARD, &match_pile));
 
-        cl_selector<cl_player*> player_selector(&players, &players[0]);
+        cl_selector<Player*> player_selector(&players, &players[0]);
 
-        cl_player* p_active_player = players[0];
+        Player* p_active_player = players[0];
         
         // Human's turn
         p_active_player->play_turn();

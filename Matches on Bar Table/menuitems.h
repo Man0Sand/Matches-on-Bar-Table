@@ -45,11 +45,11 @@ private:
 class cl_menuitem_edit_player : public cl_menuitem
 {
 public:
-	cl_menuitem_edit_player(std::string display_text, cl_player::T_config* player_cfg);
+	cl_menuitem_edit_player(std::string display_text, Player::Config* player_cfg);
 	bool enter_pressed();
 
 private:
-    cl_player::T_config* m_p_player_cfg;
+    Player::Config* m_p_player_cfg;
 	const std::string m_display_text;
 };
 
@@ -63,7 +63,7 @@ public:
 	bool enter_pressed();
 
 private:
-	std::vector<cl_player::T_config>* m_p_player_cfg;
+	std::vector<Player::Config>* m_p_player_cfg;
 	cl_game::E_number_of_players* m_p_number_of_players;
 };
 

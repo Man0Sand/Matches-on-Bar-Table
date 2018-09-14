@@ -3,7 +3,7 @@
 
 #include "screen_buffer.h"
 
-cl_game::cl_game(I_KeyboardBuffer& kb_buffer, I_MatchPile* p_match_pile, std::vector<cl_player*> p_players) :
+cl_game::cl_game(I_KeyboardBuffer& kb_buffer, I_MatchPile* p_match_pile, std::vector<Player*> p_players) :
 kb_buffer_(kb_buffer),
 turn_(0),
 p_match_pile_(p_match_pile),
@@ -69,7 +69,7 @@ void cl_game::play_round(void)
 	prompt_for_enter();
 }
 
-cl_player* cl_game::p_get_active_player()
+Player* cl_game::p_get_active_player()
 {
     return p_active_player_.GetValue();
 }

@@ -51,7 +51,7 @@ bool cl_menuitem_edit::enter_pressed()
 //----------------------------------------------------------------------------------------------------------------------------
 // cl_menuitem_edit_player
 //----------------------------------------------------------------------------------------------------------------------------
-cl_menuitem_edit_player::cl_menuitem_edit_player(std::string display_text, cl_player::T_config* player_cfg) :
+cl_menuitem_edit_player::cl_menuitem_edit_player(std::string display_text, Player::Config* player_cfg) :
 	cl_menuitem(display_text),
 	m_p_player_cfg(player_cfg),
 	m_display_text(display_text)
@@ -66,14 +66,14 @@ bool cl_menuitem_edit_player::enter_pressed()
     p_edit_player_items.push_back(new cl_menuitem_edit("Name", &m_p_player_cfg->name));
     
     // Menu item for toggling player type
-    std::vector<cl_player::E_type> player_type_enums = { cl_player::HUMAN, cl_player::COMPUTER};
+    std::vector<Player::Type> player_type_enums = { Player::HUMAN, Player::COMPUTER};
     std::vector<std::string> player_type_texts = { "human", "computer" };
-    p_edit_player_items.push_back(new cl_menuitem_toggle<cl_player::E_type>("Type", &player_type_enums, &player_type_texts, &m_p_player_cfg->type));
+    p_edit_player_items.push_back(new cl_menuitem_toggle<Player::Type>("Type", &player_type_enums, &player_type_texts, &m_p_player_cfg->type));
 
     // Menu item for toggling computer difficulty level
-    std::vector<cl_player::E_difficulty> difficulty_enums = { cl_player::EASY, cl_player::MEDIUM, cl_player::HARD };
+    std::vector<Player::Difficulty> difficulty_enums = { Player::EASY, Player::MEDIUM, Player::HARD };
     std::vector<std::string> difficulty_texts = { "easy", "medium", "hard" };
-    p_edit_player_items.push_back(new cl_menuitem_toggle< cl_player::E_difficulty >("Difficulty", &difficulty_enums, &difficulty_texts, &m_p_player_cfg->difficulty));
+    p_edit_player_items.push_back(new cl_menuitem_toggle< Player::Difficulty >("Difficulty", &difficulty_enums, &difficulty_texts, &m_p_player_cfg->difficulty));
 
 	// Menu item for exiting the menu
     p_edit_player_items.push_back(new cl_menuitem("Exit menu"));
@@ -167,16 +167,16 @@ bool cl_menuitem_start_game::enter_pressed()
 {
     cl_matchpile match_pile = cl_matchpile(pile_settings_);
 
-    std::vector<cl_player*> p_players(m_player_settings.number_of_players);
+    std::vector<Player*> p_players(m_player_settings.number_of_players);
     for (int i = 0; i < m_player_settings.number_of_players; ++i)
     {
-        p_players[i] = cl_player::create(KeyboardBuffer::GetInstance(), static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()), m_player_settings.player_config[i], &match_pile);
+        p_players[i] = Player::create(KeyboardBuffer::GetInstance(), static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()), m_player_settings.player_config[i], &match_pile);
     }
     
     cl_game game(KeyboardBuffer::GetInstance(), &match_pile, p_players);
 	game.play_game();
 	
-    for (cl_player* player : p_players)
+    for (Player* player : p_players)
     {
         delete player;
     }
@@ -210,7 +210,7 @@ bool cl_menuitem_toggle<T>::enter_pressed()
 	return false;
 }
 
-template class cl_menuitem_toggle<cl_player::E_difficulty>;
+template class cl_menuitem_toggle<Player::Difficulty>;
 template class cl_menuitem_toggle<cl_game::E_number_of_players>;
-template class cl_menuitem_toggle<cl_player::E_type>;
+template class cl_menuitem_toggle<Player::Type>;
 template class cl_menuitem_toggle<cl_matchpile::e_pick_matches_randomly>;

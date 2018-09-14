@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "player.h"
+#include "computer_player.h"
 #include "matchpile.h"
 #include "match_pile_mock.h"
 #include "keyboard_buffer_mock.h"
@@ -21,28 +21,28 @@ namespace
 		{
 		}
 
-        int pick_match(int matches_before, cl_player_computer::E_difficulty difficulty)
+        int pick_match(int matches_before, ComputerPlayer::Difficulty difficulty)
         {
             MatchPileMock match_pile = MatchPileMock(matches_before);
-            cl_player_computer player = cl_player_computer("Tietsa", 42, difficulty, &match_pile);
-            cl_player* p_player = &player;
+            ComputerPlayer player = ComputerPlayer("Tietsa", 42, difficulty, &match_pile);
+            Player* p_player = &player;
             p_player->play_turn();
             return matches_before - match_pile.get_remaining_matches();
         }
 
-        void verify_match(int matches_before, int matches_picked_expected, cl_player_computer::E_difficulty difficulty)
+        void verify_match(int matches_before, int matches_picked_expected, ComputerPlayer::Difficulty difficulty)
         {
             int matches_picked = pick_match(matches_before, difficulty);
             ASSERT_EQ(matches_picked_expected, matches_picked);
         }
 
-        void verify_match_statistical(int matches_before, std::vector<double> averages_expected, cl_player::E_difficulty difficulty, std::string fail_msg)
+        void verify_match_statistical(int matches_before, std::vector<double> averages_expected, Player::Difficulty difficulty, std::string fail_msg)
         {
             double repeats = 1000.0;
             std::vector<double> occurrences_realized = { 0.0, 0.0, 0.0 };
 
             MatchPileMock pile = MatchPileMock(matches_before);
-            cl_player_computer player = cl_player_computer("Tietsa", 42, difficulty, &pile);
+            ComputerPlayer player = ComputerPlayer("Tietsa", 42, difficulty, &pile);
 
             for (int i = 0; i < repeats; ++i)
             {
@@ -76,7 +76,7 @@ namespace
 
     TEST_F(ComputerPlayer_Test, PickMatchesHard)
     {
-        cl_player::E_difficulty difficulty = cl_player::HARD;
+        Player::Difficulty difficulty = Player::HARD;
 
         verify_match(1, 1, difficulty);
         verify_match(2, 1, difficulty);
@@ -91,7 +91,7 @@ namespace
 
     TEST_F(ComputerPlayer_Test, PickMatchesEasy)
     {
-        cl_player::E_difficulty difficulty = cl_player::EASY;
+        Player::Difficulty difficulty = Player::EASY;
 
         verify_match_statistical(1, { 1.00, 0.00, 0.00 }, difficulty, "1 match left");
         verify_match_statistical(2, { 0.33, 0.67, 0.00 }, difficulty, "2 matches left");
@@ -106,7 +106,7 @@ namespace
 
     TEST_F(ComputerPlayer_Test, PickMatchesMedium)
     {
-        cl_player::E_difficulty difficulty = cl_player::MEDIUM;
+        Player::Difficulty difficulty = Player::MEDIUM;
 
         verify_match_statistical(1, { 1.00, 0.00, 0.00 }, difficulty, "1 match left");
         verify_match_statistical(2, { 0.67, 0.33, 0.00 }, difficulty, "2 matches left");

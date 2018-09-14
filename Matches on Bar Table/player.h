@@ -3,84 +3,46 @@
 
 #include <string>
 
-#include "I_match_pile.h"
 #include "I_keyboard_buffer.h"
-#include "computer_randomizer.h"
+#include "I_match_pile.h"
 
-//----------------------------------------------------------------------------------------------------------------------------
-// cl_player
-//----------------------------------------------------------------------------------------------------------------------------
-class cl_player
+class Player
 {
 public:
     void play_turn();
-    virtual ~cl_player();
+    virtual ~Player();
     std::string get_player_type();
     std::string get_player_name();
     int get_matches_removed();
-    enum E_type
+    enum Type
     {
         HUMAN,
         COMPUTER
     };
-    enum E_difficulty
+    enum Difficulty
     {
         EASY,
         MEDIUM,
         HARD
     };
-    struct T_config
+    struct Config
     {
         std::string name;
-        E_type type;
-        E_difficulty difficulty;
+        Type type;
+        Difficulty difficulty;
     };
-    static cl_player* create(I_KeyboardBuffer& kb_buffer, unsigned randomizer_seed, const T_config& player_config, I_MatchPile* p_match_pile);
+    static Player* create(I_KeyboardBuffer& kb_buffer, unsigned randomizer_seed, const Config& player_config, I_MatchPile* p_match_pile);
 
 protected:
     // Variables
     I_MatchPile* p_match_pile_;
-    int m_matches_removed;
-    const std::string m_player_type;
-    const std::string m_player_name;
+    int matches_removed_;
+    const std::string player_type_;
+    const std::string player_name_;
     
     // Functions
     virtual int choose_matches() = 0;
-    cl_player(std::string player_type, std::string player_name, I_MatchPile* p_match_pile);
+    Player(std::string player_type, std::string player_name, I_MatchPile* p_match_pile);
  };
-
-//----------------------------------------------------------------------------------------------------------------------------
-// cl_player_computer
-//----------------------------------------------------------------------------------------------------------------------------
-class cl_player_computer : public cl_player
-{
-public:
-    cl_player_computer(std::string player_name, unsigned randomizer_seed, E_difficulty difficulty, I_MatchPile* p_match_pile);
-    bool determine_randomness();
-
-private:
-    // Variables
-    const E_difficulty m_difficulty;
-    ComputerRandomizer randomizer;
-    // Functions
-    int choose_matches() override;
-    int pick_matches(int matches_left, bool choose_randomly);
-};
-
-//----------------------------------------------------------------------------------------------------------------------------
-// cl_player_human
-//----------------------------------------------------------------------------------------------------------------------------
-class cl_player_human : public cl_player
-{
-public:
-    cl_player_human(I_KeyboardBuffer& kb_buffer, std::string player_name, I_MatchPile* p_matchpile);
-
-private:
-    // Variables
-    I_KeyboardBuffer& kb_buffer_;
-    // Functions
-    int choose_matches() override;
-    int get_user_input();
-};
 
 #endif // PLAYER_H
